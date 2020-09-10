@@ -1,0 +1,26 @@
+﻿[[revhistory, Revision History]]
+== Revision History
+
+TODO: update section
+
+// .14 June 2004
+// . Added <<lambert-azimuthal-equal-area,the section called “Lambert azimuthal equal area”>>.
+// . <<polar-stereographic,the section called "Polar Stereographic">> : Added **`latitude_of_projection_origin`** map parameter.
+
+// .1 July 2004
+// . <<scalar-coordinate-variables>> : Added note that use of scalar coordinate variables inhibits interoperability with COARDS conforming applications.
+// . <<multiple-forecasts-from-single-analysis>> : Added **`positive`** attribute to the scalar coordinate p500 to make it unambiguous that the pressure is a vertical coordinate value.
+
+// .20 September 2004
+// . <<cell-methods>> : Changed several incorrect occurances of the cell method **`"standard deviation"`** to **`"standard_deviation"`**.
+
+
+
+// .20 February 2020
+// . #230 - Correct inconsistency in units or geostationary projection
+
+// .2 June 2020
+// . link:$$https://github.com/cf-convention/cf-conventions/issues/259$$[Issue #259]: Clarify geostationary projection items
+
+// .6 July 2020
+// . link:$$https://github.com/cf-convention/cf-conventions/issues/222$$[Issue #222]: Allow CRS WKT to represent the CRS without requiring reader to compare with grid mapping parameters.

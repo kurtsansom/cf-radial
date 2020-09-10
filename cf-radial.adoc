@@ -1,0 +1,107 @@
+= CF2 NetCDF Climate and Forecast (CF) Metadata Conventions for RADAR and LIDAR in Radial Coordinates
+Mike{nbsp}Dixon; Mark{nbsp}Curtis; Daniel{nbsp}Michelson; Joe{nbsp}Hardin; Ken{nbsp}Kehoe; Samuel{nbsp}Haimov
+Version 2.1 (draft)
+:doctype: book
+:pdf-folio-placement: physical
+:sectanchors:
+:toc: macro
+:toclevels: 3
+
+toc::[]
+
+:numbered!:
+include::toc-extra.adoc[]
+
+== About the authors
+
+.Original Authors
+* Mike Dixon, EOL, NCAR, Boulder, Colorado, USA
+* Mark Curtis, Bureau of Meteorology, Melbourne, Australi
+* Daniel Michelson, Environment and Climate Change Canada, Toronto, Canada
+* Joe Hardin, PNNL, DOE, Richland, Washington, USA
+* Ken Kehoe, University of Oklahoma, Norman, Oklahoma, USA
+* Samuel Haimov, University of Wyoming, Laramie, Wyoming, USA
+
+.Additional Authors
+* Kurt Sansom, CFD Research, Huntsville, Alabama, USA
+
+
+[abstract]
+== Abstract
+
+The CfRadial2 format is intended to provide a standard, modern, self-describing way to store radar and lidar data in native radial (polar) coordinates.
+
+CfRadial2 is built on NetCDF-4, which is in turn built on HDF5. NetCDF-4 and HDF5 are both up-to-date technology for efficiently and easily storing scientific and engineering data.
+
+The purpose of this document is to specify a CF2-compliant NetCDF format for radar and lidar moments data in radial (i.e. polar) coordinates.
+
+The intention is that the format should, as far as possible, comply with the CF conventions for gridded data. However, the current CF 2.0 convention does not support radial radar/lidar data. Therefore, extensions to the conventions will be required.
+
+The current CF conventions are documented at:
+
+link:$$http://cfconventions.org/$$[http://cfconventions.org/]
+
+link:$$http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.pdf[Version 1.8 pdf]
+
+:numbered!:
+include::pr01.adoc[]
+
+:numbered:
+include::ch01.adoc[]
+
+:numbered:
+include::ch02.adoc[]
+
+:numbered:
+include::ch03.adoc[]
+
+:numbered:
+include::ch04.adoc[]
+
+:numbered:
+include::ch05.adoc[]
+
+:numbered:
+include::ch06.adoc[]
+
+:numbered:
+include::ch07.adoc[]
+
+:numbered:
+include::ch08.adoc[]
+
+:numbered:
+include::ch09.adoc[]
+
+// :numbered!:
+// include::appa.adoc[]
+
+// :numbered!:
+// include::appb.adoc[]
+
+// :numbered!:
+// include::appc.adoc[]
+
+// :numbered!:
+// include::appd.adoc[]
+
+// :numbered!:
+// include::appe.adoc[]
+
+// :numbered!:
+// include::appf.adoc[]
+
+// :numbered!:
+// include::appg.adoc[]
+
+// :numbered:
+// include::apph.adoc[]
+
+// :numbered!:
+// include::appi.adoc[]
+
+:numbered!:
+include::history.adoc[]
+
+:numbered!:
+include::bibliography.adoc[]

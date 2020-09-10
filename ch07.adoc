@@ -1,0 +1,220 @@
+﻿[[root-groups, Chapter 7, optional root group]]
+
+== Root group metadata groups
+
+The base _CF/Radial_ convention, as described above, covers the minimum set of NetCDF elements which are required to locate radar/lidar data in time and space.
+
+Additional groups may be included to provide metadata on other aspects of the system.
+
+These groups reside in the root group, and are optional.
+
+=== The _radar_parameters_ sub-group
+
+This group holds radar parameters specific to a radar instrument:
+
+[[radar-parameters-group]]
+._radar_parameters_ sub-group
+[cols=",,,,",options="header",caption="Table 7.1. "]
+|===
+| *Variable name* | *Dimension* | *Type* | *Units* | *Comments*
+|antenna_gain_h |none |float |dBi |Nominal antenna gain, +
+H polarization
+|antenna_gain_v |none |float |dBi |Nominal antenna gain, +
+V polarization
+|beam_width_h |none |float |degrees |Antenna beam width +
+H polarization
+|beam_width_v |none |float |degrees |Antenna beam width +
+V polarization
+|receiver_bandwidth |none |float |s-1 |Bandwidth of radar receiver
+|===
+
+=== The _lidar_parameters_ sub-group
+
+This group holds radar parameters specific to a lidar instrument:
+
+[[lidar-parameters-group]]
+._lidar_parameters_ sub-group
+[cols=",,,,",options="header",caption="Table 7.2. "]
+|===
+| *Variable name* | *Dimension* | *Type* | *Units* | *Comments*
+|beam_divergence |none |float |milliradians |Transmit side
+|field_of_view |none |float |milliradians |Receive side
+|aperture_diameter |none |float |cm |
+|aperture_efficiency |none |float |percent |
+|peak_power |none |float |watts |
+|pulse_energy |none |float |joules |
+|===
+
+=== The _radar_calibration_ sub-group
+
+For a radar, a different calibration is required for each pulse width. Therefore the calibration variables are arrays.
+
+==== Dimensions
+
+[[lidar-dimensions]]
+.Lidar Dimensions
+[cols=",",options="header",caption="Table 7.3. "]
+|===
+| *Dimension name* | *Description*
+|Dimension name |Description
+|calib |The number of radar calibrations available
+|===
+
+==== Variables
+
+The meaning of the designations used in the calibration variables are as follows for dual-polarization radars:
+
+* '*h*': horizontal channel
+* '*v*': vertical channel
+* '*hc*': horizontal co-polar (h transmit, h receive)
+* '*hx*' – horizontal cross-polar (v transmit, h receive)
+* '*vc*': vertical co-polar (v transmit, v receive)
+* '*vx*' – vertical cross-polar (h transmit, v receive)
+
+For single polarization radars, the '*h*' quantities should be used.
+
+
+[[lidar-variables]]
+.Lidar variables
+[cols=",,,,",options="header",caption="Table 7.4. "]
+|===
+| *Variable name* | *Dimension* | *Type* | *Units* | *Comments*
+|calib_index |(calib) |byte | |Calibration index for each ray. +
+Assumed 0 if missing.
+|time |(calib) |string |UTC |e.g. 2008-09-25 +
+T23:00:00Z
+|pulse_width |(calib) |float |seconds |Pulse width for this +
+calibration
+|antenna_gain_h |(calib) |float |dB |Derived antenna gain +
+H channel
+|antenna_gain_v |(calib) |float |dB |Derived antenna gain +
+V channel
+|xmit_power_h |(calib) |float |dBm |Transmit power +
+H channel
+|xmit_power_v |(calib) |float |dBm |Transmit power +
+V channel
+|two_way_waveguide_loss_h |(calib) |float |dB |2-way waveguide loss +
+measurement plane to feed horn, H channel
+|two_way_waveguide_loss_v |(calib) |float |dB a|
+2-way waveguide loss
+
+measurement plane to feed horn, V channel
+
+|two_way_radome_loss_h |(calib) |float |dB |2-way radome loss +
+H channel
+|two_way_radome_loss_v |(calib) |float |dB |2-way radome loss +
+V channel
+|receiver_mismatch_loss |(calib) |float |dB |Receiver filter bandwidth mismatch loss
+|receiver_mismatch_loss_h |(calib) |float |dB |Receiver filter bandwidth mismatch loss +
+H channel
+|receiver_mismatch_loss_v |(calib) |float |dB |Receiver filter bandwidth mismatch loss V channel
+|radar_constant_h |(calib) |float |m/mW +
+dB units |Radar constant +
+H channel
+|radar_constant_v |(calib) |float |m/mW +
+dB units |Radar constant +
+V channel
+|probert_jones_correction |(calib) |float |dB |Probert Jones antenna correction factor.
+|dielectric_factor_used |(calib) |float | |This is |K^2^| in the radar equation
+|noise_hc |(calib) |float |dBm |Measured noise level +
+H co-pol channel
+|noise_vc |(calib) |float |dBm |Measured noise level +
+V co-pol channel
+|noise_hx |(calib) |float |dBm |Measured noise level +
+H cross-pol channel
+|noise_vx |(calib) |float |dBm |Measured noise level +
+V cross-pol channel
+|receiver_gain_hc |(calib) |float |dB |Measured receiver gain +
+H co-pol channel
+|receiver_gain_vc |(calib) |float |dB |Measured receiver gain +
+V co-pol channel
+|receiver_gain_hx |(calib) |float |dB |Measured receiver gain +
+H cross-pol channel
+|receiver_gain_vx |(calib) |float |dB |Measured receiver gain +
+V cross-pol channel
+|base_1km_hc |(calib) |float |dBZ |reflectivity at 1km for SNR=0dB +
+noise-corrected +
+H co-pol channel
+|base_1km_vc |(calib) |float |dBZ |reflectivity at 1km for SNR=0dB +
+noise-corrected +
+V co-pol channel
+|base_1km_hx |(calib) |float |dBZ |reflectivity at 1km for SNR=0dB +
+noise-corrected +
+H cross-pol channel
+|base_1km_vx |(calib) |float |dBZ |reflectivity at 1km for SNR=0dB +
+noise-corrected +
+V cross-pol channel
+|sun_power_hc |(calib) |float |dBm |Calibrated sun power +
+H co-pol channel
+|sun_power_vc |(calib) |float |dBm |Calibrated sun power +
+V co-pol channel
+|sun_power_hx |(calib) |float |dBm |Calibrated sun power +
+H cross-pol channel
+|sun_power_vx |(calib) |float |dBm |Calibrated sun power +
+V cross-pol channel
+|noise_source_power_h |(calib) |float |dBm |Noise source power +
+H channel
+|noise_source_power_v |(calib) |float |dBm |Noise source power +
+V channel
+|power_measure_loss_h |(calib) |float |dB |Power measurement loss in coax and connectors +
+H channel
+|power_measure_loss_v |(calib) |float |dB |Power measurement loss in coax and connectors +
+V channel
+|coupler_forward_loss_h |(calib) |float |dB |Coupler loss into waveguide +
+H channel
+|coupler_forward_loss_v |(calib) |float |dB |Coupler loss into waveguide +
+V channel
+|zdr_correction |(calib) |float |dB |corrected = +
+measured + correction
+|ldr_correction_h |(calib) |float |dB |corrected = +
+measured + correction
+|ldr_correction_v |(calib) |float |dB |corrected = +
+measured + correction
+|system_phidp |(calib) |float |degrees |System PhiDp, as seen in drizzle close to radar
+|test_power_h |(calib) |float |dBm |Calibration test power +
+H channel
+|test_power_v |(calib) |float |dBm |Calibration test power +
+V channel
+|receiver_slope_hc |(calib) |float | |Computed receiver slope, ideally 1.0 +
+H co-pol channel
+|receiver_slope_vc |(calib) |float | |Computed receiver slope, ideally 1.0 +
+V co-pol channel
+|receiver_slope_hx |(calib) |float | |Computed receiver slope, ideally 1.0 +
+H cross-pol channel
+|receiver_slope_vx |(calib) |float | |Computed receiver slope, ideally 1.0 +
+V cross-pol channel
+|===
+
+
+=== The _lidar_calibration_ sub-group
+
+At the time of writing, the contents of this group have not been defined.
+
+=== The _georeference_correction_ sub-group
+
+The following additional variables are used to quantify errors in the georeference data for moving platforms (see 5.4). These are constant for a volume.
+
+If any item is omitted, the value is assumed to be 0.
+
+[[georeference-group]]
+._georeference_correction_ sub-group
+[cols=",,,,",options="header",caption="Table 7.5. "]
+|===
+| *Variable name* | *Dimension* | *Type* | *Units* | *Comments*
+|azimuth_correction |none |float |degrees |Correction to azimuth values
+|elevation_correction |none |float |degrees |Correction to elevation values
+|range_correction |none |float |meters |Correction to range values
+|longitude_correction |none |float |degrees |Correction to longitude values
+|latitude_correction |none |float |degrees |Correction to latitude values
+|pressure_altitude_correction |none |float |meters |Correction to pressure altitude values
+|radar_altitude_correction |none |float |meters |Correction to radar altitude values
+|eastward_ground_speed_correction |none |float |m/s |Correction to EW ground speed values
+|northward_ground_speed_correction |none |float |m/s |Correction to NS ground speed values
+|vertical_velocity_correction |none |float |m/s |Correction to vertical velocity values
+|heading_correction |none |float |degrees |Correction to heading values
+|roll_correction |none |float |degrees |Correction to roll values
+|pitch_correction |none |float |degrees |Correction to pitch values
+|drift_correction |none |float |degrees |Correction to drift values
+|rotation_correction |none |float |degrees |Correction to rotation values
+|tilt_correction |none |float |degrees |Correction to tilt values
+|===

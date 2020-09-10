@@ -1,0 +1,9 @@
+[[standard-names, Chapter 8, Standard names]]
+
+== Standard names
+
+To the extent possible, CfRadial uses standard names already defined by CF.
+
+The standard_name entries not already accepted by CF have been requested for inclusion.
+
+The relevant standard names for radar and lidar data will be specified in a separate document.

@@ -1,0 +1,96 @@
+
+[[spectrum-groups, Chapter 6, Spectrum groups]]
+== Spectrum groups
+
+Because spectra are potentially voluminous, they are stored in a sparse array, such that a spectrum need only be stored for gate locations of interest, rather than at all locations. (For example, we may not store spectra for gates with low SNR.) This is achieved through the use of an integer ‘spectrum index’ variable, which exists for every gate location. If the index is set to -1, no spectrum is stored for that gate. If the index is 0 or positive, it indicates the location of the spectrum in the spectrum data array.
+
+=== Spectrum-specific information on sweep
+
+If spectra are stored in a sweep, the sweep will define the following:
+
+dimension _spectrum_group_ – the number of spectrum groups in the sweep;
+
+variable _spectrum_group_names_(_spectrum_group_) – the names of the spectrum groups.
+
+This array will allow the user to locate the spectrum groups in the sweep.
+
+=== _spectrum_index_ variable
+
+Each spectrum group will contain a single _spectrum_index_ variable.
+
+_spectrum_index_ is an integer variable, stored as a regular field data variable as specified in section 5.6 above. There is a spectrum index value for every gate in the sweep. The dimensions are:
+
+_spectrum_index_(time, range)
+
+just as for all field variables.
+
+The _FillValue attribute is set to -1.
+
+If the index is missing for a gate, this indicates that there is no spectrum stored for that gate.
+
+If the index is not missing for a gate, it will be set to a value between 0 and (index – 1). This value indicates the location for the spectrum in the spectrum field data variable array.
+
+=== Spectrum group dimensions
+
+[[spectrum-group-dimensions]]
+.Spectrum group dimensions
+[cols=",",options="header",caption="Table 6.1. "]
+|===
+| *Dimension name* | *Description*
+|index |Number of spectra stored in each spectrum variable in this group. This dimensions the number of indices used to locate the spectra, i.e. for the gates where the index is not -1.
+|sample |Number of samples in the spectra.
+|===
+
+=== Spectrum field variables
+
+A spectrum variable will have the dimensions: (index, sample).
+
+As with moments field variables, a spectrum variable will be stored using one of the following:
+
+[[spectrum-field-variables]]
+.Spectrum field variables
+[cols=",,",options="header",caption="Table 6.2. "]
+|===
+| *NetCDF type* | *Byte width* | *Description* 
+|ncbyte |1 |scaled signed integer
+|short |2 |scaled signed integer
+|int |4 |scaled signed integer
+|float |4 |floating point
+|double |8 |floating point
+|===
+
+=== Spectrum field attributes
+
+Spectrum fields have the following attributes:
+
+[[spectrum-field-attributes]]
+.Spectrum field attributes
+[cols=",,,",options="header",caption="Table 6.3. "]
+|===
+| *Attribute name* | *Type* | *Convention* | *Description*
+|long_name |string |CF |Long name describing the field. +
+Any string is appropriate. +
+Although this is an optional attribute, its use is strongly encouraged.
+|standard_name |string |CF |CF standard name for field, or from section 8.
+|units |string |CF |Units for field
+|_FillValue or missing_value |same type as field data |CF |Indicates data are missing for a given sample. _FillValue is preferred.
+|scale_factor |float |CF |See section 5.6. +
+Float value = +
+(integer value) * scale_factor +
++ add_offset. +
+Only applied to integer types.
+|add_offset |float |CF a|
+See section 5.6.
+
+Float value =
+
+(integer value) * scale_factor
+
++ add_offset.
+
+Only applied to integer types.
+
+|coordinates |string |CF |See section 5.6.2.
+|fft_length |int |CF/Radial |Length used to compute this spectrum
+|block_avg_length |int |CF/Radial |Number of block spectra averaged for each output spectrum.
+|===

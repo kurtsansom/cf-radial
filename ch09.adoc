@@ -1,0 +1,278 @@
+﻿[[georeference-transforms, Chapter 9, Georeference transforms]]
+
+== Computing the data location from geo-reference variables
+
+Weather radars and lidars rotate primarily about a _principal axis_ (e.g., “zenith” for plan-position-indicator mode in ground-based radar), slew about a secondary axis, orthogonal to the primary axis (e.g., range-height-indicator in ground-based radar), or slew on a plane by changing both primary and secondary axis (e.g., COPLANE in ground-based radar).
+
+In the ground-based radar convention, a point in space relative to a radar is represented in a local spherical coordinate systems **X**~i~ by three parameters, range (_r_), azimuth (_λ_), and elevation (_φ_). A ground-based radar is assumed “leveled” with positive (negative) elevation, _φ_, above (below) a _reference plane_ (a leveled plane orthogonal to the principal axis and containing the radar). The azimuth angle, _λ_, is the angle on the reference plane increases clockwise from the True North (TN) following the Meteorological coordinate convention (e.g., TN is 0° and East is 90°).
+
+Processing and manipulating radar data (e.g., interpolation, synthesis, etc.) typically are performed in a right-handed 3-D XYZ Cartesian geo-referenced coordinate system *X* (see Fig. 7.1) where Y is TN and X is East. Hence, a coordinate transformation between **X**~i~ (radar sampling space) and *X* (geo-reference space) is required. Based on the principal axes, most remote sensors can be classified into three right-hand types, X, Y, or Z type.
+
+The purpose of this chapter is two-fold: (1) to define a consistent terminology for the CfRadial format, and (2) to derive coordinate transformation matrices for each type of remote sensor. Many sensors (e.g. fixed ground radars) are of the Z-type, have a fixed location, are leveled and are aligned relative to True North (TN). Dealing with such sensors is much simpler than for those on moving platforms. Therefore, they will be dealt with first, and the more complicated treatment of all three types of remote sensor mounted on moving platforms will be covered in the later sections.
+
+Figure .: Left-handed XYZ coordinate system vs. Right-handed XYZ coordinate system.
+
+In addition to the standard X, Y and Z right-hand types, specialized types such as the ELDORA and NOAA aircraft tail radars will be handled separately. The tail radars will be referred to as type Y-prime.
+
+=== Special case – ground-based, stationary and leveled sensors
+
+Ground-based sensors (radars and lidars) rotate primarily about the vertical (Z) axis (Z-Type), and the reference plane is a horizontal XY plane passing through the sensor. The Y-axis is aligned with TN, and the X-axis points East.
+
+Azimuth angles (_λ_) are positive clockwise looking from above (+Z), with 0 being TN.
+
+Elevation angles (_φ_) are measured relative to the horizontal reference plane, positive above the plane and negative below it.
+
+A ground-based, leveled vertical pointing sensor can be classified as a Z-Type with φ=90°.
+
+==== LIDARsimage:extracted-media/media/image1.wmf[image,width=12,height=19]
+
+For LIDARs, the assumption is generally made that propagation of the beam is along a straight line, emanating at the sensor. The coordinate transformation between **X**~i~ (_r_, _λ_, _φ_) and *X* (_x_, _y_, _z_) is as follows:
+
+where
+
+_x_ is positive east
+
+_y_ is positive north
+
+(__x__~0~, __y__~0~, __z__~0~) are the coordinates of the sensor relative to the Cartesian grid origin and the azimuth angle (_λ_) is the angle clockwise from TN.
+
+The sensor location is specified in longitude, latitude and altitude in the CfRadial format. Locations in the earth’s geo-reference coordinate system are computed using the sensor location and the (_x_,_y_,_z_) from above, using normal spherical geometry.
+
+==== RADARs
+
+The propagation of radar microwave energy in a beam through the lower atmosphere is affected by the change of refractive index of the atmosphere with height. Under average conditions this causes the beam to be deflected downwards, in what is termed ‘Standard Refraction’. For most purposes this is adequately modeled by assuming that the beam is in fact straight, relative to an earth which has a radius of 4/3 times the actual earth radius. (Rinehart 2004.)
+
+For a stationary and leveled, ground-based radar, the equations are similar to those for the LIDAR case, except that we have one extra term, the height correction, which reflects the beam curvature relative to the earth.
+
+The height _h_ above the earth’s surface for a given range is:
+
+image:extracted-media/media/image9.wmf[image,width=228,height=29]
+
+where is the pseudo radius of earth. See Rinehart 2004, Chapter 3, for more details.
+
+The (_x_,_y_) location for a given range is:
+
+where _x_ is positive east, _y_ is positive north, and remembering that azimuth is the angle clockwise from true north.
+
+=== Moving platforms
+
+For moving platforms, the metadata for each beam will include:
+
+* longitude of instrument
+* latitude of instrument
+* altitude of instrument
+* rotation and tilt of the beam (see above)
+* roll, pitch and heading of the platform
+* platform motion (U~G~, V~G~, W~G~)
+* air motion (U~air~, V~air~, W~air~)
+
+For ground-based moving platforms (e.g., Doppler on Wheels), the earth-relative location of the observed point is:
+
+Note that for airborne radar platforms, correcting for refractive index does not apply. Therefore, for airborne radars, use the straight line equations for LIDARs.
+
+Refer to the sections below for the computation of elevation (_φ_) and azimuth (_λ_) relative to earth coordinates.
+
+Then apply the following equations, as before, to compute the location of the observed point.
+
+=== Coordinate transformations for the general case
+
+This section details the processing for the general case.
+
+Sensors which do not fall under section 7.1 above must be handled as a general case.
+
+==== Coordinate systems
+
+In addition to the previously-defined *X~i~* and *X* coordinate systems, the following intermediate right-handed coordinate systems need to be defined to account for a moving, non-leveled platform:
+
+* **X**~a~: platform-relative coordinates, +Y points to heading, +X points to the right side (90° clockwise from +Y on the reference plane XY), +Z is orthogonal to the reference plane.
+* **X**~h~ : leveled, platform heading-relative coordinates, +Y points heading, +X points 90° clockwise from heading, and Z points up (local zenith).
+
+The goal here is to derive transformations from *X~i~* to *X* via **X**~a~ and **X**~h~.
+
+==== The earth-relative coordinate system
+
+The earth-relative coordinate system, *X*, is defined as follows, X is East, Y is North, and Z is zenith. Azimuth angle, _λ_, is defined as positive _clockwise_ from TN (i.e., meteorological angle) while elevation angle, _φ_, is defined positive/negative above/below the horizontal plane at the altitude (__h__~0~) of the remote sensor.
+
+==== The platform-relative coordinate system
+
+The general form of the mathematic representation describes a remote sensing device mounted on a moving platform (e.g., an aircraft, see Figure 7.2). This figure depicts the theoretical reference frame for a moving platform. (We use the aircraft analogy here, but the discussion also applies to water-borne platforms and land-based moving platforms.)
+
+The platform-relative coordinate system of the platform, **X**~a~, is defined by the right side, (X~a~), the heading, (Y~a~), and the zenith, (Z~a~).
+
+The origin of **X**~a~ is defined as the location of the INS on a moving platform.
+
+The platform-relative coordinate system is defined by 3 rotations in the following order: heading (_H_), pitch (_P_) and roll (_R_) angles from *X*. These angles are generally measured by an inertial navigation system (INS).
+
+The platform moves relative to *X*, based on its heading _H_, and the drift _D_, caused by wind or current. (_D_ is 0 for land-based platforms). The track _T_ is the line of the platform movement over the earth surface.
+
+NOTE: -see Lee et al. (1994) for further background on this topic, and on the corrections to Doppler velocity for moving platforms. Usually, the platform INS and the sensor may not be collocated. The Doppler velocity needs to be compensated by the relative motion between these two.
+
+image:extracted-media/media/image15.png[image,width=607,height=508]
+
+Figure . Moving platform axis definitions and reference frame (reproduced from Lee et al., 1994,originally from Axford, 1968) ©American Meteorological Society. Reprinted with permission.
+
+Figures 7.3 a through c show the definitions of heading, drift, track, pitch and roll.
+
+Figure 9.3(a): Definition of heading, drift and track.
+
+Figure 9.3(b): Definition of pitch
+
+Figure 9.3(c): Definition of roll
+
+==== The sensor coordinate system
+
+In the sensor coordinate system, **X**~i~, each data location is characterized by a range, _r_, a rotation angle, _θ_, and a tilt angle, _τ_. +++Following the ground-based radar convention, the rotation angle, _θ_, is the angle projected on the reference plane, positive _clockwise_ from the third axis (counting from the principal axis in **X**~a~) looking _towards the sensor_ from the positive principal axis.+++ The tilt angle, _τ_, is the angle of the beam relative to the reference plane. A beam has a positive/negative _τ_ depending on whether it is on the positive/negative side of the reference plane, using the principal axis to determine the sign. Each gate location (_r_, _θ_, _τ_) in **X**~i~ can be represented in (_r_, _λ_, _φ_) in *X*.
+
+Table .: Characteristics of 4 types of sensors.
+
+[cols=",,,,",options="header",]
+|===
+|Sensor Type |Type X |Type Y |Type Y-prime |Type Z
+|Principal Axis |X~a~ |Y~a~ |Ya |Z~a~
+|Reference Plane |Y~a~Z~a~ |Z~a~X~a~ |ZaXa |X~a~Y~a~
+|0° Rotation Angle |+Z~a~ |+X~a~ |+Za |+Y~a~
+|90° Rotation Angle |+Y~a~ |+Z~a~ |+Xa |+X~a~
+|Examples |EDOP, Wyoming Cloud Radar, Wind Profiler, downward scanning radar on Global Hawk | |Tail Doppler radars on NOAA P3 and NSF/NCAR ELDORA |Ground-based radar/lidar, aircraft nose radar, NOAA P3 lower-fuselage radar, +
+C-band scatterometer
+|===
+
+=== Coordinate transformation sequence
+
+The following transformations are carried out to transform the geometry from the instrument-based (**X**~i~) to the earth-based coordinate system (*X*):
+
+* translate from **X**~i~ to **X**~a~
+* rotate from **X**~a~ to *X*
+
+==== Transformation from X~i~ to X~a~
+
+The details of this step depend on the sensor type: Z, Y or X (Table 7.1)
+
+===== Type Z sensors
+
+The characteristics are:
+
+* the primary axis is Z~a~
+* the reference plane is (X~a~, Y~a~)
+* the rotation angle _θ_ is 0 in the (Y~a~, Z~a~) plane, i.e. along the +Y axis. Rotation increases clockwise from +Y, when looking from above (i.e. from +Z)
+* the tilt angle _τ_ is 0 in the (X~a~, Y~a~) plane, positive above it (for +Z~a~) and negative below it.
+
+The transformation to Χ~a~ coordinates is:
+
+===== Type Y sensors 
+
+The characteristics are:
+
+* the primary axis is Y~a~
+* the reference plane is (Z~a~, X~a~)
+* the rotation angle _θ_ is 0 in the (Z~a~, X~a~) plane, i.e. along the +X~a~ axis. Rotation increases clockwise from +X, when looking from +Y.
+* the tilt angle _τ_ is 0 in the (Z~a~, X~a~) plane, positive for +Y~a~.
+
+*_Note that the definition of_* **_θ is different from the convention defined in Lee et al. (1994)_**footnote:[The rotation angle, _θ_’, defined in previous airborne tail Doppler radar convention (Lee et al. 1994) was positive clockwise looking from the tail toward the nose of an aircraft (i.e., looking from the -Y~a~-axis) that has been the convention for airborne tail Doppler radars. _θ_’=0° points to +Z. However, this convention is different from that used in the ground-based radars. The _r_ and _τ_ were defined the same way in the current convention.]*_. Let θ’ be the rotation angle defined in Lee et al. (1994), θ=mod(450°- θ’)._*
+
+The transformation to **Χ**~a~ coordinates is:
+
+[arabic]
+. {blank}
++
+____
+*Type Y-prime sensors*
+____
+
+The characteristics are:
+
+____
+the primary axis is Y~a~
+
+the reference plane is (Z~a~, X~a~)
+
+the rotation angle _θ_ is 0 in the (Ya, Za) plane, i.e. along the +Z~a~ axis. Rotation increases clockwise from +Z, when looking from -Y.
+
+the tilt angle _τ_ is 0 in the (Z~a~, X~a~) plane, positive for +Y~a~.
+____
+
+*_Note that the definition of_* *_θ is the convention defined in Lee et al. (1994_*
+
+The transformation to **Χ**~a~ coordinates is:
+
+===== Type X sensors 
+
+The characteristics are:
+
+* the primary axis is X~a~
+* the reference plane is (Y~a~, Z~a~)
+* the rotation angle _θ_ is 0 in the (Y~a~, Z~a~) plane, i.e. along the +Z~a~ axis. Rotation increases clockwise from +Z~a~, when looking from +X~a~.
+* the tilt angle _τ_ is 0 in the (Y~a~, Z~a~) plane, positive for +X~a~.
+
+The transformation to Χ~a~ coordinates is:
+
+==== Rotating from X~a~ to X
+
+Rotating **X**~a~ to *X* requires the following 3 steps (in the reverse order of the rotation):
+
+* remove the roll _R_, by rotating the x axis around the y axis by –_R_.
+* remove the pitch _P_, by rotating the y axis around the x axis by –_P_.
+* remove the heading _H_, by rotating the y axis around the z axis by +__H__
+
+The transformation matrix for removing the roll component is:
+
+The transformation matrix for removing the pitch component is:
+
+The transformation matrix for removing the heading component is:
+
+We apply these transformations consecutively:
+
+=== Summary of transforming from X~i~ to X
+
+We combine the above 2 main steps for transform all the way from the instrument coordinates to earth coordinates:
+
+==== For type Z radars:
+
+==== For type Y radars:
+
+==== For type Y-prime radars:
+
+==== For type X radars:
+
+==== Computing earth-relative azimuth and elevation
+
+We can then compute the earth-relative azimuth and elevation as follows:
+
+=== Summary of symbol definitions
+
+____
+**Χ**~i~: instrument-relative coordinate system, (_r_, _θ_, _τ_) or (_r_, _λ_, _φ_)
+
+**Χ**~a~: platform-relative coordinate system (__x__~a~, __y__~a~, __z__~a~) – see figure 7.2
+
+**Χ**~h~: coordinate system relative to level platform (no roll or pitch) with heading _H_.
+
+*Χ*: earth-relative coordinate system (_x_, _y_, _z_), _x_ is positive east, _y_ is positive north, _z_ is positive up.
+
+_H_: heading of platform (see figure 7.3)
+
+_T_: track of platform (see figure 7.3)
+
+_D_: drift angle (see figure 7.3)
+
+_P_: pitch angle (see figure 7.3)
+
+_R_: roll angle (see figure 7.3)
+
+_λ_: azimuth angle
+
+_φ_: elevation angle
+
+_θ_: rotation angle
+
+_τ_: tilt angle
+
+_r_: range
+____
+
+_h_: height
+
+__h__~0:~ height of the instrument
+
+____
+_R_’: pseudo radius of earth = image:extracted-media/media/image33.wmf[image,width=95,height=27]
+____

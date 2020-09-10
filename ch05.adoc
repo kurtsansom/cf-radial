@@ -1,0 +1,479 @@
+[[sweep-groups, Chapter 5, Sweep groups]]
+
+== Sweep groups
+
+This section provides details of the information in each sweep group.
+
+The name of the sweep groups is found in the _sweep_group_name_ array variable in the root group.
+
+NOTE that in the tables below, shading indicates required items. The non-shaded items are optional.
+
+=== Sweep-specific Dimensions
+
+[[sweep-specific-dimensions]]
+.Sweep Specific Dimensions
+[cols=",",options="header",caption="Table 5.1. "]
+|===
+| *Dimension name* | *Description*
+|time |The number of rays.
+|range |The number of range bins
+|prt |Number of prts used in pulsing scheme. +
+Optional for fixed, staggered or dual +
+Required for more complicated schemes.
+|spectrum_groups |Number of spectrum groups in this sweep
+|frequency |Number of frequencies used
+|===
+
+
+=== Sweep coordinate variables
+
+[[sweep-coordinates]]
+.Sweep coordinate variables
+[cols=",,,,",options="header",caption="Table 5.2. "]
+|===
+| *Variable name* | *Dimension* | *Type* | *Units* | *Comments* 
+|time |(time) |double a|
+ISO8601 string: +
+“seconds since +
+YYYY-MM-DD HH:MM:SS” +
+or
+
+“seconds since +
+YYYY-MM-DDTHH:MM:SS”
+
+|Coordinate variable for time. +
+Time at center of each ray.
+|range |(range) |float |meters a|
+Coordinate variable for range.
+
+Range to center of each bin.
+
+|===
+
+
+==== Attributes for time coordinate variable
+
+[[sweep-time-attributes]]
+.Attributes for time coordinate variable
+[cols=",,",options="header",caption="Table 5.3. "]
+|===
+| *Attribute name* | *Type* | *Value* 
+|standard_name |string |“time”
+|units |string |ISO8601 string +
+“seconds since _YYYY_-_MM_-__DD__T__hh:mm:ss__Z”, +
+where the actual reference time values are used.
+|calendar |string |Defaults to “gregorian” if missing. +
+Options are: +
+“gregorian” or “standard”, +
+“proleptic_gregorian”, +
+“noleap” or “365_day”, +
+“all_leap” or “366_day”, +
+“360_day”, +
+“julian” +
+See CF conventions for details.
+|===
+
+==== Attributes for range coordinate variable
+
+[[sweep-range-attributes]]
+.Attributes for range coordinate variable
+[cols=",,",options="header",caption="Table 5.4. "]
+|===
+| *Attribute name* | *Type* | *Value* 
+|standard_name |string |“projection_range_coordinate”
+|long_name |string |“range to measurement volume”
+|units |string |“meters”
+|spacing_is_constant |string |“true” or “false”
+|meters_to_center_of_first_gate |float |Start range in meters.
+|meters_between_gates |float |Gate spacing in meters. +
+Required if +
+spacing_is_constant is “true”. +
+Not applicable otherwise.
+|axis |string |“radial_range_coordinate”
+|===
+
+=== 
+
+=== Sweep variables
+
+[[sweep-variables]]
+.Sweep variables
+[cols=",,,,",options="header",caption="Table 5.5. "]
+|===
+| *Variable name* | *Dimension* | *Type* | *Units* | *Comments* 
+|sweep_number | |int | |The number of the sweep, in the volume scan. +
+0-based.
+|sweep_mode | |string | |Options are: +
+_“sector”,“coplane”,rhi”, +
+“vertical_pointing”,“idle”, +
+“azimuth_surveillance”, +
+“elevation_surveillance”, +
+“sunscan”,“pointing”, +
+“manual_ppi”,“manual_rhi”, +
+“doppler_beam_swinging”, +
+“complex_trajectory”, +
+“electronic_steering”_
+|follow_mode | |string | a|
+options are: _“none”, “sun”, “vehicle”, “aircraft”, “target”, “manual”_
+
+Assumed “_none_” if missing.
+
+|prt_mode | |string | |Pulsing mode +
+Options are: _“fixed”, “staggered”, “dual”, “hybrid”_. +
+Assumed “_fixed_” if missing. +
+May also be more complicated pulsing schemes, such as HHVV, HHVVH etc.
+|frequency |(frequency) |float |s-1 |List of operating frequencies, in Hertz. +
+In most cases, only a single frequency is used.
+|polarization_mode | |string | |Options are: _“horizontal”, “vertical”, “hv_alt”, “hv_sim”, “circular”_ Assumed “_horizontal_” if missing.
+|polarization_sequence |(prt) |string | |This only applies if prt_mode is set to “hybrid”. As an example, the form of it would be [‘H’,’H’,’V’,’V’,’H’] for HHVVH pulsing.
+|sweep_fixed_angle | |float |degrees |Target angle for the sweep. +
+elevation in most modes +
+azimuth in RHI mode
+|rays_are_indexed | |string | |“true” or “false” +
+Indicates whether or not the ray angles (elevation in RHI mode, azimuth in other modes) are indexed to a regular grid.
+|ray_angle_resolution | |float |degrees |If rays_are_indexed is “true”, this is the resolution of the angular grid – i.e. the delta angle between successive rays.
+|qc_procedures | |string | |Documents QC procedures per sweep.
+|target_scan_rate | |float |degrees/s |Intended scan rate for this sweep. The actual scan rate is stored according to section 4.8. +
+This variable is optional. +
+Omit if not available.
+|scan_rate |(time) |float |degrees/s |Actual antenna scan rate. +
+Set to negative if counter-clockwise in azimuth or decreasing in elevation. +
+Positive otherwise.
+|azimuth |(time) |float |degrees |Azimuth of antenna, relative to true north. +
+The azimuth should refer to the center of the dwell.
+|elevation |(time) |float |degrees |Elevation of antenna, relative to the horizontal plane. +
+The elevation should refer to the center of the dwell.
+|antenna_transition |(time) |byte | a|
+1 if antenna is in transition, +
+i.e. between sweeps, 0 if not. +
+If variable is omitted, the transition will be assumed to be 0 everywhere.
+
+Assumed 0 if missing.
+
+|pulse_width |(time) |float |seconds |
+|calib_index |(time) |int | |Index for the radar calibration that applies to this pulse width. See section 7.3.
+|rx_range_resolution |(time) |float |meters |Resolution of the raw receiver samples. +
+If missing, assumed to be meters_between_gates (5.2.2). +
+Raw data may be resampled before data storage.
+|prt |(time) |float |seconds |Pulse repetition time. +
+For staggered prt, also see prt_ratio.
+|prt_ratio |(time) |float | |Ratio of prt/prt2. +
+For dual/staggered prt mode.
+|prt_sequence |(time, prt) |float |seconds |Sequence of prts used. +
+Optional for fixed, staggered and dual, which can make use of ‘prt’ and ‘prt_ratio’. +
+Required for more complicated pulsing schemes.
+|nyquist_velocity |(time) |float |m/s |Unambiguous velocity. +
+This is the effective nyquist velocity after unfolding. +
+See also the field-specific attributes fold_limit_lower and fold_limit_upper, 5.6.
+|unambiguous_range |(time) |float |meters |Unambiguous range
+|n_samples |(time) |int | |Number of samples used to compute moments
+|spectrum_group_names |(spectrum_group) |string | |Array of names of spectrum groups.
+|===
+
+The number of samples used to compute the moments may vary from field to field. In the table above, n_samples refers to the maximum number of samples used for any field. The field attribute ‘sampling_ratio’ (see 5.6) is the actual number of samples used for a given field, divided by n_samples. It will generally be 1.0, the default.
+
+==== Attributes for azimuth(time) variable
+
+[[azimuth-attributes]]
+.Attributes for azimuth(time) variable
+[cols=",,",options="header",caption="Table 5.6. "]
+|===
+| *Attribute name* | *Type* | *Value* 
+|Attribute name |Type |Value
+|standard_name |string |“ray_azimuth_angle”
+|long_name |string |“azimuth angle from true north”
+|units |string |“degrees”
+|axis |string |“radial_azimuth_coordinate”
+|===
+
+==== Attributes for elevation(time) variable
+
+[[elevation-attributes]]
+.Attributes for elevation(time) variable
+[cols=",,",options="header",caption="Table 5.7. "]
+|===
+| *Attribute name* | *Type* | *Value* 
+|standard_name |string |“ray_elevation_angle”
+|long_name |string |“elevation angle from horizontal plane”
+|units |string |“degrees”
+|axis |string |“radial_elevation_coordinate”
+|===
+
+=== The _georeference_ sub-group
+
+For mobile platforms, this sub-group will be included in each sweep group, to store the metadata for platform position, pointing and velocity.
+
+This group will always be named ‘_georeference’_.
+
+[[georeference-variables]]
+._georeference_ sub-group
+[cols=",,,,",options="header",caption="Table 5.8. "]
+|===
+| *Variable name* | *Dimension* | *Type* | *Units* | *Comments* 
+|latitude |(time) |double |degrees_north |Latitude of instrument. +
+WGS84.
+|longitude |(time) |double |degrees_east |Longitude of instrument. +
+WGS84.
+|altitude |(time) |double |meters |Altitude of instrument, above mean sea level. WGS84 with EGM2008 geoid corections. +
+For a scanning radar, this is the center of rotation of the antenna.
+|heading |(time) |float |degrees |Heading of the platform relative to true N, looking down from above.
+|roll |(time) |float |degrees |Roll about longitudinal axis of platform. Positive is left side up, looking forward.
+|pitch |(time) |float |degrees |Pitch about the lateral axis of the platform. Positive is up at the front.
+|drift |(time) |float |degrees |Difference between heading and track over the ground. Positive drift implies track is clockwise from heading, looking from above. NOTE: not applicable to land-based mobile platforms.
+|rotation |(time) |float |degrees |Angle between the radar beam and the vertical axis of the platform. Zero is along the vertical axis, positive is clockwise looking forward from behind the platform.
+|tilt |(time) |float |degrees |Angle between radar beam (when it is in a plane containing the longitudinal axis of the platform) and a line perpendicular to the longitudinal axis. Zero is perpendicular to the longitudinal axis, positive is towards the front of the platform.
+|eastward_velocity |(time) |float |m/s |EW velocity of the platform. +
+Positive is eastwards.
+|northward_velocity |(time) |float |m/s |NS velocity of the platform. +
+Positive is northwards.
+|vertical_velocity |(time) |float |m/s |Vertical velocity of the platform. Positive is up.
+|eastward_wind |(time) |float |m/s |EW wind at the platform location. Positive is eastwards.
+|northward_wind |(time) |float |m/s |NS wind at the platform location. Positive is northwards.
+|vertical_wind |(time) |float |m/s |Vertical wind at the platform location. Positive is up.
+|heading_rate |(time) |float |degrees/s |Rate of change of heading
+|roll_rate |(time) |float |degrees/s |Rate of change of roll of the platform
+|pitch_rate |(time) |float |degrees/s |Rate of change of pitch of the platform.
+|georefs_applied |(time) |byte | |1 if georeference information for mobile platforms has been applied to correct the azimuth and elevation. +
+0 otherwise. +
+Assumed 0 if missing.
+|===
+
+=== The _monitoring_ sub-groups
+
+If monitoring data is available, this monitoring sub-groups will be included in each relevant sweep group, to store the monitoring variables.
+
+The groups will be named ‘_radar_monitoring_’ and ‘_lidar_monitoring_’ depending on the instrument type. The variables included will be dependent on the particular instrument.
+
+[[monitoring-variables]]
+._monitoring_ sub-groups
+[cols=",,,,",options="header",caption="Table 5.9. "]
+|===
+| *Variable name* | *Dimension* | *Type* | *Units* | *Comments* 
+|measured_transmit_power_h |(time) |float |dBm |Measured transmit power +
+H polarization
+|measured_transmit_power_v |(time) |float |dBm |Measured transmit power +
+V polarization
+|measured_sky_noise |(time) |float |dBm |Noise measured at the receiver when connected to the antenna with no noise source connected.
+|measured_cold_noise |(time) |float |dBm |Noise measured at the receiver when connected to the noise source, but it is not enabled.
+|measured_hot_noise |(time) |float |dBm |Noise measured at the receiver when it is connected to the noise source and the noise source is on.
+|phase_difference_transmit_hv |(time) |float |degrees |Phase difference between transmitted horizontally and vertically-polarized signals as determined from the first valid range bins
+|antenna_pointing_accuracy_elev |(time) |float |degrees |Antenna-pointing accuracy in elevation
+|antenna_pointing_accuracy_az |(time) |float |degrees |Antenna-pointing accuracy in azimuth
+|calibration_offset_h |(time) |float |dB |Calibration offset for the horizontal channel
+|calibration_offset_v |(time) |float |dB |Calibration offset for the vertical channel
+|zdr_offset |(time) |float |dB |ZDR offset (bias)
+|===
+
+Radar monitoring variables.
+
+=== Field data variables
+
+The field variables will be 2-dimensional arrays, with the dimensions *time* and *range*.
+
+The field data will be stored using one of the following:
+
+[[field-data-variables]]
+.Field data variables
+[cols=",,",options="header",caption="Table 5.10. "]
+|===
+| *NetCDF type* | *Byte width* | *Description* 
+|NC_UBYTE |1 |scaled unsigned integer
+|NC_BYTE |1 |scaled signed integer
+|NC_USHORT |2 |scaled unsigned integer
+|NC_SHORT |2 |scaled signed integer
+|NC_UINT |4 |scaled unsigned integer
+|NC_INT |4 |scaled signed integer
+|NC_UINT64 |8 |scaled unsigned integer
+|NC_INT64 |8 |scaled signed integer
+|NC_FLOAT |4 |floating point
+|NC_DOUBLE |8 |floating point
+|===
+
+The NetCDF variable name is interpreted as the short name for the field.
+
+Field data variables have the following attributes:
+
+[[field-data-attributes]]
+.Field data attributes
+[cols=",,,",options="header",caption="Table 5.11. "]
+|===
+| *Attribute name* | *Type* | *Convention* | *Description* 
+|standard_name |string |CF a|
+CF standard name for field.
+
+See section 8.
+
+|long_name |string |CF |Long name describing the field. +
+Any string is appropriate. +
+Although this is an optional attribute, its use is strongly encouraged.
+|Units |string |CF |Units for field
+|_FillValue +
+(or missing_value) |same type as field data |CF |Indicates data are missing at this range bin. +
+Use of _FillValue is preferred. +
+Only use one or the other.
+|_Undetect |same as field data |ODIM |Indicates an area (range bin) that has been radiated but has not produced a valid echo
+|scale_factor |float |CF |Float value = +
+(integer value) * scale_factor +
++ add_offset +
+Only applies to integer types. +
+Section 5.6.1.
+|add_offset |float |CF |Float value = +
+(integer value) * scale_factor +
++ add_offset +
+Only applies to integer types. +
+Section 5.6.1.
+|coordinates |string |CF |Section 5.6.2.
+|sampling_ratio |float |CF/Radial a|
+Number of samples for this field divided by n_samples +
+(see section 5.3).
+
+Assumed 1.0 if missing.
+
+|is_discrete |string |CF/Radial |“true” or “false” +
+If “true”, this indicates that the field takes on discrete values, rather than floating point values. For example, if a field is used to indicate the hydrometeor type, this would be a discrete field.
+|field_folds |string |CF/Radial |“true” or “false” +
+Used to indicate that a field is limited between a min and max value, and that it folds between the two extremes. This typically applies to such fields as radial velocity and PHIDP.
+|fold_limit_lower |float |CF/Radial |If field_folds is “true”, this indicates the lower limit at which the field folds.
+|fold_limit_upper |float |CF/Radial |If field_folds is “true”, this indicates the upper limit at which the field folds.
+|is_quality_field |string |CF/Radial |“true” or ”false” +
+“true” indicates this is a quality control field. +
+If the attribute is not present, defaults to “false”.
+|flag_values |array of same type as field data |CF |Array of flag values. These values have special meaning, as documented in flag_meanings.
+|flag_meanings |string[] |CF |Meaning of flag_values or flag_masks.
+|flag_masks |array of same type as field data |CF |Valid bit-wise masks used in a flag field that is comprised of bit-wise combinations of mask values. +
+See flag_meanings.
+|qualified_variables |string[] |CF/Radial |Applicable if is_quality_field is “true”. +
+Array list of variables that this variable qualifies. +
+Every field variable in this list should list this variable in its ancillary_variable attribute.
+|ancillary_variables |string[] |CF |Array list of variables to which this variable is related. In particular, this is intended to list the variables that contain quality information about this field. In that case, the quality field will list this field in its qualified_variable attribute.
+|thresholding_xml |string |CF/Radial |Thresholding details. +
+Supplied if thresholding has been applied to the field. +
+This should be in self-descriptive XML. (See 5.6.6.)
+|legend_xml |string |CF/Radial a|
+Legend details. +
+Applies to discrete fields. +
+Maps field values to the properties they represent. +
+This should be in self-descriptive XML. (See 5.6.7.)
+
+Not sure what to do here.
+
+|===
+
+==== Use of scale_factor and add_offset
+
+scale_factor and add_offset are required for ncbyte, short and int fields. They are not applicable to float and double fields.
+
+float_value = (integer_value * scale_factor) + add_offset
+
+==== Use of coordinates attribute
+
+The “coordinates’ attribute lists the variables needed to compute the location of a data point in space.
+
+For stationary platforms, the coordinates attribute should be set to:
+
+*“_elevation azimuth range_”*
+
+For mobile platforms, the coordinates attribute should be set to:
+
+*“_elevation azimuth range heading roll pitch rotation tilt_”*
+
+==== Use of flag values - optional
+
+For all data sets, the _*FillValue* attribute has special meaning – see 3.5.
+
+A field variable may make use of more than one reserved value, to indicate a variety of conditions. For example, with radar data, you may wish to indicate that the beam is blocked for a given gate, and that no echo will ever be detected at that gate. That provides more information than just using _*FillValue*.
+
+The *flag_values* and *flag_meanings* attributes can be used in this case.
+
+The *flag_values* attribute is a list of values (other than *_FillValue*) that have special meanings. It should have the same type as the variable.
+
+The *flag_meanings* string attribute is an array of strings that indicate the meanings of each of the *flag_values*. If multi-word meanings are needed, use underscores to connect the words. For example you might use flag meanings of ‘no_coverage’ and ‘low_snr’ to distinguish between regions where the radar cannot see as opposed to regions where the signal is well below the noise.
+
+==== Flag mask fields - optional
+
+An integer-type field variable may contain values that describe a number of independent Boolean conditions. The field is constructed using the bit-wise OR method to combine the conditions.
+
+In this case, the *flag_mask* and *flag_meanings* attributes are used to indicate the valid values in the field, and the meanings.
+
+The *flag_masks* attribute is a list of integer values (other than *_FillValue*) that are bit-wise combinations valid for the field variable. It should have the same type as the variable.
+
+The *flag_meanings* string attribute is an array of strings that indicate the meanings of each of the *flag_masks*. If multi-word meanings are needed, use underscores to connect the words.
+
+ODIM note - this mechanism can be used to indicate various conditions, such as no-echo etc. It is cleaner and more flexible than overloading the actual values in the data.
+
+==== Quality control fields - optional
+
+Some field variables exist to provide quality information about another field variable. For example, one field may indicate the uncertainty associated with another field.
+
+In this case, the field should have the *is_quality* string attribute, with the value set to “true”. If this attribute is missing, it is assumed to be “false”.
+
+In addition, the field should have the *qualified_variables* string attribute. This is an array of field names that this field qualifies.
+
+Each qualified field, in turn, should have the *ancillary_variables* string attribute. This is an array of fields that qualify it.
+
+==== Thresholding XML
+
+The thresholding_xml should contain self-explanatory information about any thresholding that has been applied to the data field, as in the following example:
+
+____
+<thresholding field="DBZ">
+
+<field_used>
+
+<name>NCP</name>
+
+<min_val>0.15</min_val>
+
+</field_used>
+
+<field_used>
+
+<name>SNR</name>
+
+<min_val>-3.0</min_val>
+
+</field_used>
+
+<note>NCP only checked if DBZ > 40</note>
+
+</thresholding>
+____
+
+==== Legend XML
+
+The legend_xml should contain self-explanatory information about the categories for a discrete field, as in the following example for particle type:
+
+____
+<legend label="particle_id">
+
+<category>
+
+<value>1</value>
+
+<label>cloud</label>
+
+<category>
+
+<category>
+
+<value>2</value>
+
+<label>drizzle</label>
+
+<category>
+
+.......
+
+.......
+
+<category>
+
+<value>17</value>
+
+<label>ground_clutter</label>
+
+<category>
+
+</legend>
+____
+

@@ -1,0 +1,116 @@
+[[data-groups, Chapter 4, Data groups]]
+
+== Root group
+
+The following sections present the details of the information in the top-level (root) group of the data set.
+
+NOTE that in the tables below, shading indicates required items. The non-shaded items are optional.
+
+=== Global attributes
+
+[[global-attributes]]
+.Global Attributes
+[cols=",,,",options="header",caption="Table 4.1. "]
+|===
+| *Attribute name* | *Type* | *Convention* | *Description*
+|Conventions |string |CF |Conventions string will specify “Cf/Radial”.
+|version |string |CF/Radial |CF/Radial version number +
+(“2.0”)
+|title |string |CF |Short description of file contents
+|institution |string |CF |Where the original data were produced
+|references |string |CF |References that describe the data or the methods used to produce it
+|source |string |CF |Method of production of the original data
+|history |string |CF |List of modifications to the original data
+|comment |string |CF |Miscellaneous information
+|instrument_name |string |CF/Radial |Name of radar or lidar
+|site_name |string |CF/Radial |Name of site where data were gathered
+|scan_name |string |CF/Radial |Name of scan strategy used, if applicable
+|scan_id |int |CF/Radial |Scan strategy id, if applicable. +
+Assumed 0 if missing.
+|platform_is_mobile |string |CF/Radial |“true” or “false” +
+Assumed “false” if missing.
+|ray_times_increase |string |CF/Radial |“true” or “false” +
+Assumed “true” if missing. +
+This is set to true if ray times increase monotonically throughout all of the sweeps in the volume.
+| *field_names*         | *string[]* | *CF/Radial* |*Array of strings of field names present in this file.*
+| *time_coverage_start* | *string*   | *CF/Radial* |*Copy of time_coverage_start global variable in 4.3.*
+| *time_coverage_end*   | *string*   | *CF/Radial* |*Copy of time_coverage_end global variable in 4.3.*
+| simulated data        | string     | ODIM        | “true” or “false” +
+Assumed “false” if missing. +
+Data in this file are simulated 
+|===
+
+=== Global Dimensions
+
+[[global-dimensions]]
+.Global Dimensions
+[cols=",",options="header",caption="Table 4.2. "]
+|===
+|*Dimension name* | *Description*
+|sweep |The number of sweeps in the dataset
+|===
+
+
+=== Global variables
+
+[[global-variables]]
+.Global Variables
+[cols=",,,,",options="header",caption="Table 4.3. "]
+|===
+| *Variable name* | *Dimension* | *Type* | *Units* | *Comments*
+|volume_number | |int | |Volume numbers are sequential, relative to some arbitrary start time, and may wrap.
+|platform_type | |string | a|
+Options are: +
+_“fixed”, “vehicle”, “ship”, “aircraft”, +
+“aircraft_fore”,“aircraft_aft”, +
+“aircraft_tail”,“aircraft_belly”, +
+“aircraft_roof”,“aircraft_nose”, +
+“satellite_orbit”, +
+“satellite_geostat”_
+
+Assumed “fixed” if missing.
+
+|instrument_type | |string | a|
+Options are: “_radar_”, “_lidar_”
+
+Assumed “_radar_” if missing.
+
+|primary_axis | |string | a|
+Options are: +
+_“axis_z”, “axis_y”, “axis_x”, “axis_z_prime”, “axis_y_prime”, “axis_x_prime”._
+
+See section 9 for details.
+
+Assumed “_axis_z_” if missing.
+
+|time_coverage_start | |double a|
+ISO8601 string: +
+“seconds since YYYY-MM-DD HH:MM:SS” or
+
+“seconds since YYYY-MM-DDTHH:MM:SS”
+
+|UTC time of first ray in file.
+|time_coverage_end | |double a|
+ISO8601 string: +
+“seconds since YYYY-MM-DD HH:MM:SS” or
+
+“seconds since YYYY-MM-DDTHH:MM:SS”
+
+|UTC time of last ray in file.
+|latitude | |double |degrees_north |Latitude of instrument, +
+using WGS84. +
+For a mobile platform, this is a latitude at the start of the volume.
+|longitude | |double |degrees_east |Longitude of instrument, +
+using WGS84 +
+For a mobile platform, this is the longitude at the start of the volume.
+|altitude | |double |meters |Altitude of instrument, above mean sea level, using WGS84 and EGM2008 geoid corrections. +
+For a scanning radar, this is the center of rotation of the antenna. +
+For a mobile platform, this is the altitude at the start of the volume.
+|altitude_agl | |double |meters |Altitude of instrument above ground level. +
+Omit if not known.
+|sweep_group_name |(sweep) |string | |Array of names for sweep groups. +
+Allows the user to locate the sweep groups directly.
+|sweep_fixed_angle |(sweep) |float |degrees |Array of fixed angles for sweeps. This summarizes the fixed angles for all of the sweeps, so that a user does not need to read individual sweep groups to determine the fixed angles. The value should be copied from the sweep_fixed_angle attribute in the sweep groups.
+|status_str | |string | |General-purpose string for storing any information that is not included in other parts of the data structure. Format can be simple text, +
+XML, JSon, etc.
+|===
