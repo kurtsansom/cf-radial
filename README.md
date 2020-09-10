@@ -1,3 +1,9 @@
+# CF2 Radial conventions for radar data
+
+This is a fork of the cf-conventions repository and content modified using the content from the CfRadial project.
+
+See [ CfRadial Project ](https://github.com/NCAR/CfRadial).
+
 [![Build Status](https://secure.travis-ci.org/cf-convention/cf-conventions.png)](http://travis-ci.org/cf-convention/cf-conventions)
 
 This repository contains the official source of the CF metadata conventions.
